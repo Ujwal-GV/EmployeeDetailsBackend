@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require("path");
 const { checkAuthorization } = require("../middleware/authMiddleware");
 const { createEmployee, getAllUsers, getEmployee, updateEmployee, deleteEmployee } = require("../controllers/employeeController");
-const { storage } = require('../config/cloudinaryConfig'); // Correctly import the Cloudinary storage configuration
+const { storage } = require('../config/cloudinary'); // Correctly import the Cloudinary storage configuration
 
 const upload = multer({ storage: storage }); // Use Cloudinary storage for file upload
 
