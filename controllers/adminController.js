@@ -34,7 +34,11 @@ async function signup(req, res){
 
     if(admin){
         console.log("Admin created");
+        const token = jwt.sign({ name: admin._id }, "youcantdecodethis", { expiresIn: "2h" });
+        res.cookie( 'name', admin.userName );
+        console.log(admin.userName);
         res.status(201).json({ message: "Admin created" });
+        res.json({ token });
     }
     else{
         res.status(400).json({ message: "Invalild admin data" });
@@ -43,8 +47,14 @@ async function signup(req, res){
 
 async function login(req, res){
     const { userName, password } = req.body;
-    const admin = await Admin.findOne({ userName });
+    console.log("Request Body:", req.body);
 
+
+    const admin = await Admin.findOne({ userName });
+    console.log("Admin Found:", admin);
+    if (admin) {
+        console.log("Password Match:", await admin.matchPassword(password));
+    }
     if(admin && (await admin.matchPassword(password))){
         const token = jwt.sign({ name: admin._id }, "youcantdecodethis", { expiresIn: "2h" });
         res.cookie( 'name', admin.userName );
