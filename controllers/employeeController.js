@@ -1,7 +1,7 @@
 const Employee = require("../models/employee");
 const multer = require('multer');
 
-const { storage } = require('../configuration/cloudinary');
+const { storage } = require('../config/cloudinary');
 const upload = multer({ storage });
 
 async function createEmployee(req, res) {
