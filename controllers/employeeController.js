@@ -13,9 +13,9 @@ async function createEmployee(req, res) {
     }
 
     try {
-        // const f_image = req.file ? req.file.path : '';
-        // const employee = new Employee({ f_name, f_email, f_mobile, f_designation, f_gender, f_course, f_image });
-        const employee = new Employee({ f_name, f_email, f_mobile, f_designation, f_gender, f_course });
+        const f_image = req.file ? req.file.path : '';
+        const employee = new Employee({ f_name, f_email, f_mobile, f_designation, f_gender, f_course, f_image });
+        // const employee = new Employee({ f_name, f_email, f_mobile, f_designation, f_gender, f_course });
 
         await employee.save();
         console.log("New Employee created");
