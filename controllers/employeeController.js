@@ -1,29 +1,29 @@
 const Employee = require("../models/employee");
+const multer = require('multer');
 
-async function createEmployee(req, res){
+const { storage } = require('../configuration/cloudinary');
+const upload = multer({ storage });
+
+async function createEmployee(req, res) {
     const { f_name, f_email, f_mobile, f_designation, f_gender, f_course } = req.body;
 
     const existingEmailCheck = await Employee.findOne({ f_email });
-    if(existingEmailCheck){
+    if (existingEmailCheck) {
         return res.status(400).json({ message: "Email already exists" });
     }
 
-    if(!req.file || !["image/jpg", "image/png", "image/jpeg"].includes(req.file.mimetype)){
-        return res.status(400).json({ message: "Please upload a JPG/ PNG file" });
-    }
-
-    const f_image = req.file ? req.file.filename : ''; 
-    try{
-        const employee = new Employee({ f_name, f_email, f_mobile, f_designation, f_gender, f_course, f_image});
-        const image = req.file.originalname;
+    try {
+        const f_image = req.file ? req.file.path : '';
+        const employee = new Employee({ f_name, f_email, f_mobile, f_designation, f_gender, f_course, f_image });
         await employee.save();
-        console.log("New Employee created")
+        console.log("New Employee created");
         res.status(201).json({ message: "New Employee created" });
-    }
-    catch(error){
-        return res.status(500).json({ message: error.message });
+    } catch (error) {
+        console.error("Error creating employee:", error.message);
+        res.status(500).json({ message: "Server error, please try again later" });
     }
 }
+
 
 async function getAllUsers(req, res){
     try {
@@ -45,23 +45,23 @@ async function getEmployee(req, res){
     }
 }
 
-async function updateEmployee(req, res){
+async function updateEmployee(req, res) {
     const { f_name, f_email, f_mobile, f_designation, f_gender, f_course } = req.body;
-    const f_image = req.file?req.file.filename : '';
 
-    // const existingEmailCheck = await Employee.findOne({ f_email });
-    // if(existingEmailCheck){
-    //     return res.status(400).json({ message: "Email already exists" });
-    // }
-    
-    try{
-        const employee = await Employee.findByIdAndUpdate(req.params.id, { f_name, f_email, f_mobile, f_designation, f_gender, f_course, f_image}, { new: true });
-        res.status(201).json({ message: "Employee details updated" });
-    }
-    catch(error){
-        res.status(500).json({ message: error.message });
+    try {
+        const f_image = req.file ? req.file.path : ''; // Cloudinary stores the URL in `path`
+        const employee = await Employee.findByIdAndUpdate(
+            req.params.id,
+            { f_name, f_email, f_mobile, f_designation, f_gender, f_course, f_image },
+            { new: true }
+        );
+        res.status(200).json({ message: "Employee details updated" });
+    } catch (error) {
+        console.error("Error updating employee:", error.message);
+        res.status(500).json({ message: "Server error, please try again later" });
     }
 }
+
 
 async function deleteEmployee(req, res){
     try {
